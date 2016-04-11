@@ -3,9 +3,10 @@
 namespace SpyimmoBundle\Crawlers;
 
 use GuzzleHttp\Exception\RequestException;
+use SpyimmoBundle\Entity\Search;
+use SpyimmoBundle\Services\CrawlerService;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DomCrawler\Crawler;
-use SpyimmoBundle\Services\CrawlerService;
 
 /**
  * Class FnaimCrawler
@@ -25,11 +26,11 @@ class FnaimCrawler extends AbstractCrawler
         $this->searchUrl = self::SEARCH_URL;
     }
 
-    public function getOffers($criterias, $excludedCrawlers = array())
+    public function getOffers(Search $search, $excludedCrawlers = array())
     {
         $this->searchUrl = $this->transformFnaimUrl();
         $this->searchUrl = $this->generateUrl($this->searchUrl, $criterias);
-        parent::getOffers($criterias, $excludedCrawlers);
+        parent::getOffers($search, $excludedCrawlers);
 
         $offers = $this->nodeFilter($this->crawler, '.annonce_liste ul li h3 a');
         if ($offers) {

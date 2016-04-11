@@ -3,9 +3,10 @@
 namespace SpyimmoBundle\Crawlers;
 
 use GuzzleHttp\Exception\RequestException;
+use SpyimmoBundle\Entity\Search;
+use SpyimmoBundle\Services\CrawlerService;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DomCrawler\Crawler;
-use SpyimmoBundle\Services\CrawlerService;
 
 /**
  * Class GdcCrawler
@@ -28,9 +29,9 @@ class GdcCrawler extends AbstractCrawler
         $this->searchUrl = null;
     }
 
-    public function getOffers($criterias, $excludedCrawlers = array())
+    public function getOffers(Search $search, $excludedCrawlers = array())
     {
-        parent::getOffers($criterias, $excludedCrawlers);
+        parent::getOffers($search, $excludedCrawlers);
 
         try {
             $this->crawler = $this->client->request('GET', 'https://gensdeconfiance.fr/membre/connexion');

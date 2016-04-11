@@ -1,0 +1,19 @@
+{% extends 'SpyimmoBundle:Layouts:layout.html.twig' %}
+
+{% block title %}SpyImmo - Configuration{% endblock %}
+
+{% block content %}
+    <br><br><br><h1>Configuration</h1>
+
+{{ form_start(form) }}
+{{ form_row(form.minBudget) }}
+{{ form_row(form.maxBudget) }}
+{{ form_row(form.minSurface) }}
+{{ form_row(form.maxSurface) }}
+{{ form_row(form.minBedroom) }}
+{{ form_row(form.minRoom) }}
+{{ form_row(form.maxRoom) }}
+{{ form_end(form) }}
+
+{% endblock %}
+

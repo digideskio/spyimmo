@@ -4,10 +4,11 @@ namespace SpyimmoBundle\Crawlers;
 
 use Goutte\Client;
 use GuzzleHttp\Exception\RequestException;
-use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\DomCrawler\Crawler;
+use SpyimmoBundle\Entity\Search;
 use SpyimmoBundle\Logger\SpyimmoLogger;
 use SpyimmoBundle\Manager\OfferManager;
+use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\DomCrawler\Crawler;
 
 /**
  * Class AbstractCrawler
@@ -34,7 +35,6 @@ abstract class AbstractCrawler
     protected $cptNew;
     protected $cpt;
     protected $searchCriterias;
-    protected $criteriaClosures;
 
     public function __construct()
     {
@@ -42,10 +42,9 @@ abstract class AbstractCrawler
         $this->cptNew = 0;
         $this->cpt = 0;
         $this->searchCriterias = array();
-        $this->criteriaClosures = array();
     }
 
-    public function getOffers($criterias, $excludedCrawlers = array())
+    public function getOffers(Search $search, $excludedCrawlers = array())
     {
         $this->cpt = 0;
         $this->cptNew = 0;
@@ -57,13 +56,13 @@ abstract class AbstractCrawler
         $this->spyimmoLogger->logSection(sprintf('[%s] Fetching offers %s', $this->name,
             implode(', ', array_map(
                 function ($v, $k) { return $k . '=' . $v; },
-                $criterias,
-                array_keys($criterias)
+                $search->getCriterias(),
+                array_keys($search->getCriterias())
             ))
         ));
 
         if ($this->searchUrl) {
-            $params = $this->generateSearchUrl($criterias, $this->criteriaClosures);;
+            $params = $this->generateSearchUrl($search);
             $this->searchUrl = $this->searchUrl . ($params ? '&'.$params : '');
             try {
                 $this->crawler = $this->client->request('GET', $this->searchUrl);
@@ -73,6 +72,21 @@ abstract class AbstractCrawler
                 return 0;
             }
         }
+    }
+
+    protected function getCriterias(Search $search)
+    {
+        $criterias = [];
+
+        foreach ($search->getCriterias() as $key => $criteria) {
+            if (false === array_key_exists($key, $this->searchCriterias)) {
+                continue;
+            }
+
+            $criterias[$this->searchCriterias[$key]] = $criteria;
+        }
+
+        return $criterias;
     }
 
     protected function getOfferDetail($url, $title)
@@ -88,22 +102,9 @@ abstract class AbstractCrawler
         return $isNew;
     }
 
-    public function generateSearchUrl($criterias, $criteriaClosures = array())
+    public function generateSearchUrl(Search $search, $criteriaClosures = array())
     {
-        $argsQuery = array();
-        foreach ($criterias as $key => $val) {
-            if (isset($this->searchCriterias[$key])) {
-                $urlParamKey = $this->searchCriterias[$key];
-                if (isset($criteriaClosures[$urlParamKey])) {
-                    $closure = $criteriaClosures[$urlParamKey];
-                    $val = $closure($val);
-                }
-
-                $argsQuery[$urlParamKey] = $val;
-            }
-        }
-
-        return http_build_query($argsQuery);
+        return http_build_query($this->getCriterias($search));
     }
 
     public function isScheduled()
@@ -170,8 +171,10 @@ abstract class AbstractCrawler
         }
     }
 
-    protected function generateUrl($url, $criteria)
+    protected function generateUrl($url, Search $search)
     {
+        $criteria = $this->getCriterias($search);
+
         return str_replace(array_keys($criteria), array_values($criteria), $url);
     }
 

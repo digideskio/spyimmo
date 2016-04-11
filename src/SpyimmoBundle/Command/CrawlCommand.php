@@ -2,13 +2,14 @@
 
 namespace SpyimmoBundle\Command;
 
+use SpyimmoBundle\Entity\Search;
+use SpyimmoBundle\Notifier\PushbulletNotifier;
+use SpyimmoBundle\Services\CrawlerService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use SpyimmoBundle\Notifier\PushbulletNotifier;
-use SpyimmoBundle\Services\CrawlerService;
 
 class CrawlCommand extends ContainerAwareCommand
 {
@@ -49,14 +50,23 @@ class CrawlCommand extends ContainerAwareCommand
         $this->getContainer()->get('test.logger.service')->setLogger($io);
         $io->title('Spyimmo Crawler');
 
-        if(!$forcedCrawler) {
-            // Just avoid crawling at fixed time
-            $waitingTime = rand(0, 600);
-            $io->text(sprintf('Waiting %d seconds before crawling ...', $waitingTime));
-            sleep($waitingTime);
-        }
+        // if(!$forcedCrawler) {
+        //     // Just avoid crawling at fixed time
+        //     $waitingTime = rand(0, 600);
+        //     $io->text(sprintf('Waiting %d seconds before crawling ...', $waitingTime));
+        //     sleep($waitingTime);
+        // }
 
-        $cptNew = $this->crawlerService->crawl($forcedCrawler);
+        $searchs = $this->getContainer()->get('search.manager')->findAll();
+
+        foreach ($searchs as $search) {
+            $this->doExecute($search, $io, $forcedCrawler);
+        }
+    }
+
+    private function doExecute(Search $search, SymfonyStyle $io, $forcedCrawler)
+    {
+        $cptNew = $this->crawlerService->crawl($search, $forcedCrawler);
 
         if ($cptNew > 0) {
             $url = $this->getContainer()->getParameter('website');
@@ -65,8 +75,8 @@ class CrawlCommand extends ContainerAwareCommand
         } else {
             $io->note(sprintf('[%s] No new offer found', date('d/m/Y H:i')));
         }
-    }
 
+    }
     /**
      * @return mixed
      */

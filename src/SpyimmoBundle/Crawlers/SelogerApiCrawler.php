@@ -2,9 +2,10 @@
 
 namespace SpyimmoBundle\Crawlers;
 
+use SpyimmoBundle\Entity\Search;
+use SpyimmoBundle\Services\CrawlerService;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DomCrawler\Crawler;
-use SpyimmoBundle\Services\CrawlerService;
 
 /**
  * Class SelogerApiCrawler
@@ -24,9 +25,9 @@ class SelogerApiCrawler extends SelogerCrawler
         $this->searchUrl = self::SEARCH_URL;
     }
 
-    public function getOffers($criterias, $excludedCrawlers = array())
+    public function getOffers(Search $search, $excludedCrawlers = array())
     {
-        parent::getOffers($criterias, $excludedCrawlers);
+        parent::getOffers($search, $excludedCrawlers);
 
         $offers = $this->nodeFilter($this->crawler, 'annonces > annonce');
 

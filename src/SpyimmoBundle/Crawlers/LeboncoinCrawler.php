@@ -3,9 +3,10 @@
 namespace SpyimmoBundle\Crawlers;
 
 use GuzzleHttp\Exception\RequestException;
+use SpyimmoBundle\Entity\Search;
+use SpyimmoBundle\Services\CrawlerService;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DomCrawler\Crawler;
-use SpyimmoBundle\Services\CrawlerService;
 
 /**
  * Class LeboncoinCrawler
@@ -26,12 +27,12 @@ class LeboncoinCrawler extends AbstractCrawler
         $this->searchUrl = self::SEARCH_URL;
 
         $this->searchCriterias = array(
-          CrawlerService::MIN_BUDGET  => 'mrs',
-          CrawlerService::MAX_BUDGET  => 'mre',
-          CrawlerService::MIN_SURFACE => 'sqs',
-          CrawlerService::MAX_SURFACE => 'sqe',
-          CrawlerService::MIN_NB_ROOM => 'ros',
-          CrawlerService::MAX_NB_ROOM => 'roe',
+          Search::MIN_BUDGET  => 'mrs',
+          Search::MAX_BUDGET  => 'mre',
+          Search::MIN_SURFACE => 'sqs',
+          Search::MAX_SURFACE => 'sqe',
+          Search::MIN_ROOM => 'ros',
+          Search::MAX_ROOM => 'roe',
         );
 
         $sizeClosure = function ($surf) {
@@ -68,9 +69,9 @@ class LeboncoinCrawler extends AbstractCrawler
         );
     }
 
-    public function getOffers($criterias, $excludedCrawlers = array())
+    public function getOffers(Search $search, $excludedCrawlers = array())
     {
-        parent::getOffers($criterias, $excludedCrawlers);
+        parent::getOffers($search, $excludedCrawlers);
 
         $offers = $this->nodeFilter($this->crawler, '.mainList .list_item');
         if ($offers) {

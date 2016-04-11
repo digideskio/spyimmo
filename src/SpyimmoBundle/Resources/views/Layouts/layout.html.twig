@@ -34,6 +34,7 @@
                     <ul class="nav navbar-nav">
                         <li {% if (app.request.get('_route')) == 'homepage' %} class="active" {% endif %} ><a href="{{ path('homepage') }}"><span class="glyphicon glyphicon-list" aria-hidden="true"></span> Dernières offres</a></li>
                         <li {% if (app.request.get('_route')) == 'indexFavorite' %} class="active" {% endif %}><a href="{{ path('indexFavorite') }}"><span class="glyphicon glyphicon-star" aria-hidden="true"></span> Favorites</a></li>
+                        <li {% if (app.request.get('_route')) == 'configure' %} class="active" {% endif %} ><a href="{{ path('configure') }}"><span class="glyphicon glyphicon-list" aria-hidden="true"></span> Configuration</a></li>
                     </ul>
                 </div>
                 <div id="navbar-right" style="margin-right: 15px" class="navbar-collapse navbar-right collapse">
@@ -42,6 +43,16 @@
                     </ul>
                 </div>
             </nav>
+
+            <br><br><br>
+
+            {% for type, messages in app.session.flashBag.all() %}
+                {% for message in messages %}
+                    <div class="flash-{{ type }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
             {% block content %}{% endblock %}
         </div>
     </div>

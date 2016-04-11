@@ -23,6 +23,11 @@
             <argument>%spyimmo.postal_codes%</argument>
         </service>
 
+        <service id="search.manager" class="SpyimmoBundle\Manager\SearchManager">
+            <argument type="service" id="doctrine" />
+            <argument type="service" id="security.token_storage" />
+        </service>
+
         <service id="test.crawler.service"
                  class="SpyimmoBundle\Services\CrawlerService"
         >

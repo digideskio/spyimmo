@@ -3,9 +3,10 @@
 namespace SpyimmoBundle\Crawlers;
 
 use GuzzleHttp\Exception\RequestException;
+use SpyimmoBundle\Entity\Search;
+use SpyimmoBundle\Services\CrawlerService;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DomCrawler\Crawler;
-use SpyimmoBundle\Services\CrawlerService;
 
 /**
  * Class ParuvenduCrawler
@@ -28,12 +29,12 @@ class ParuvenduCrawler extends AbstractCrawler
         $this->searchUrl = self::SEARCH_URL;
 
         $this->searchCriterias = array(
-          CrawlerService::MIN_BUDGET  => 'px0',
-          CrawlerService::MAX_BUDGET  => 'px1',
-          CrawlerService::MIN_SURFACE => 'sur0',
-          CrawlerService::MAX_SURFACE => 'sur1',
-          CrawlerService::MIN_NB_ROOM => 'nbp0',
-          CrawlerService::MAX_NB_ROOM => 'nbp1',
+          Search::MIN_BUDGET  => 'px0',
+          Search::MAX_BUDGET  => 'px1',
+          Search::MIN_SURFACE => 'sur0',
+          Search::MAX_SURFACE => 'sur1',
+          Search::MIN_ROOM => 'nbp0',
+          Search::MAX_ROOM => 'nbp1',
         );
 
         $this->criteriaClosures = array(
@@ -46,9 +47,9 @@ class ParuvenduCrawler extends AbstractCrawler
         );
     }
 
-    public function getOffers($criterias, $excludedCrawlers = array())
+    public function getOffers(Search $search, $excludedCrawlers = array())
     {
-        parent::getOffers($criterias, $excludedCrawlers);
+        parent::getOffers($search, $excludedCrawlers);
 
         $offers = $this->nodeFilter($this->crawler, '.annonce a:not(.im11_shop):not(.im11_v3d):not(.im16_consultpro)');
         if ($offers) {

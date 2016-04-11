@@ -3,9 +3,10 @@
 namespace SpyimmoBundle\Crawlers;
 
 use GuzzleHttp\Exception\RequestException;
+use SpyimmoBundle\Entity\Search;
+use SpyimmoBundle\Services\CrawlerService;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DomCrawler\Crawler;
-use SpyimmoBundle\Services\CrawlerService;
 
 /**
  * Class OmmiCrawler
@@ -25,11 +26,11 @@ class OmmiCrawler extends AbstractCrawler
         $this->searchUrl = self::SEARCH_URL;
     }
 
-    public function getOffers($criterias, $excludedCrawlers = array())
+    public function getOffers(Search $search, $excludedCrawlers = array())
     {
         $this->searchUrl = $this->transformOmmiUrl();
-        $this->searchUrl = $this->generateUrl($this->searchUrl, $criterias);
-        parent::getOffers($criterias, $excludedCrawlers);
+        $this->searchUrl = $this->generateUrl($this->searchUrl, $search);
+        parent::getOffers($search, $excludedCrawlers);
 
         $offers = $this->nodeFilter($this->crawler, '.search-results .grid .item-title a');
         if ($offers) {
@@ -55,7 +56,7 @@ class OmmiCrawler extends AbstractCrawler
 
     protected function transformOmmiUrl()
     {
-        return sprintf(self::SEARCH_URL, CrawlerService::MAX_BUDGET, CrawlerService::MIN_SURFACE);
+        return sprintf(self::SEARCH_URL, Search::MAX_BUDGET, Search::MIN_SURFACE);
     }
 
     protected function getOfferDetail($url, $title)

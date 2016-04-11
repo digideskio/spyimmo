@@ -2,11 +2,12 @@
 
 namespace SpyimmoBundle\Services;
 
-use Symfony\Component\Console\Style\SymfonyStyle;
 use SpyimmoBundle\Crawlers\AbstractCrawler;
 use SpyimmoBundle\Crawlers\BaoCrawler;
 use SpyimmoBundle\Crawlers\GdcCrawler;
 use SpyimmoBundle\Crawlers\OmmiCrawler;
+use SpyimmoBundle\Entity\Search;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class CrawlerService
 {
@@ -14,14 +15,6 @@ class CrawlerService
      * @var AbstractCrawler[]
      */
     protected $crawlers;
-
-    const MIN_NB_BEDROOM = 'nb_bedroom';
-    const MIN_NB_ROOM = 'min_nb_room';
-    const MAX_NB_ROOM = 'max_nb_room';
-    const MIN_SURFACE = 'min_surface';
-    const MAX_SURFACE = 'max_surface';
-    const MIN_BUDGET = 'min_budget';
-    const MAX_BUDGET = 'max_budget';
 
     public function __construct()
     {
@@ -44,7 +37,7 @@ class CrawlerService
         $this->crawlers[] = $crawler;
     }
 
-    public function crawl($forceCrawler = null)
+    public function crawl(Search $search, $forceCrawler = null)
     {
         $cptNewOffers = 0;
 
@@ -55,13 +48,14 @@ class CrawlerService
             }
 
             $cptNewOffers += $crawler->getOffers(
-              array(
-                self::MIN_NB_BEDROOM => 1,
-                self::MIN_NB_ROOM    => 2,
-                self::MIN_SURFACE    => 25,
-                self::MAX_BUDGET     => 950
-              ),
-              array()
+              // array(
+              //   self::MIN_NB_BEDROOM => 1,
+              //   self::MIN_NB_ROOM    => 2,
+              //   self::MIN_SURFACE    => 25,
+              //   self::MAX_BUDGET     => 950
+              // ),
+                $search,
+                array()
             );
 
         }

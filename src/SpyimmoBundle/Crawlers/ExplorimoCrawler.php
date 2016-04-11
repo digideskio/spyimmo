@@ -3,9 +3,9 @@
 namespace SpyimmoBundle\Crawlers;
 
 use GuzzleHttp\Exception\RequestException;
+use SpyimmoBundle\Entity\Search;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DomCrawler\Crawler;
-use SpyimmoBundle\Services\CrawlerService;
 
 /**
  * Class ExplorimoCrawler
@@ -27,18 +27,18 @@ class ExplorimoCrawler extends AbstractCrawler
         $this->searchUrl = self::SEARCH_URL;
 
         $this->searchCriterias = array(
-          CrawlerService::MIN_BUDGET  => 'priceMin',
-          CrawlerService::MAX_BUDGET  => 'priceMax',
-          CrawlerService::MIN_SURFACE => 'areaMin',
-          CrawlerService::MAX_SURFACE => 'areaMax',
-          CrawlerService::MIN_NB_ROOM => 'roomMin',
-          CrawlerService::MAX_NB_ROOM => 'roomMax',
+          Search::MIN_BUDGET  => 'priceMin',
+          Search::MAX_BUDGET  => 'priceMax',
+          Search::MIN_SURFACE => 'areaMin',
+          Search::MAX_SURFACE => 'areaMax',
+          Search::MIN_ROOM => 'roomMin',
+          Search::MAX_ROOM => 'roomMax',
         );
     }
 
-    public function getOffers($criterias, $excludedCrawlers = array())
+    public function getOffers(Search $search, $excludedCrawlers = array())
     {
-        parent::getOffers($criterias, $excludedCrawlers);
+        parent::getOffers($search, $excludedCrawlers);
 
         $offers = $this->nodeFilter($this->crawler, '#vue .bloc-item-header a');
         if ($offers) {

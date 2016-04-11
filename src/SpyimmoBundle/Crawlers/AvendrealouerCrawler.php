@@ -3,9 +3,9 @@
 namespace SpyimmoBundle\Crawlers;
 
 use GuzzleHttp\Exception\RequestException;
+use SpyimmoBundle\Entity\Search;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DomCrawler\Crawler;
-use SpyimmoBundle\Services\CrawlerService;
 
 /**
  * Class AvendrealouerCrawler
@@ -27,17 +27,17 @@ class AvendrealouerCrawler extends AbstractCrawler
         $this->searchUrl = self::SEARCH_URL;
 
         $this->searchCriterias = array(
-          CrawlerService::MIN_BUDGET     => 'minimumPrice',
-          CrawlerService::MAX_BUDGET     => 'maximumPrice',
-          CrawlerService::MIN_SURFACE    => 'minimumSurface',
-          CrawlerService::MAX_SURFACE    => 'maximumSurface',
-          CrawlerService::MIN_NB_BEDROOM => 'bedroomComfortIds'
+          Search::MIN_BUDGET => 'minimumPrice',
+          Search::MAX_BUDGET => 'maximumPrice',
+          Search::MIN_SURFACE => 'minimumSurface',
+          Search::MAX_SURFACE => 'maximumSurface',
+          Search::MIN_BEDROOM => 'bedroomComfortIds'
         );
     }
 
-    public function getOffers($criterias, $excludedCrawlers = array())
+    public function getOffers(Search $search, $excludedCrawlers = array())
     {
-        parent::getOffers($criterias, $excludedCrawlers);
+        parent::getOffers($search, $excludedCrawlers);
 
         $offers = $this->nodeFilter($this->crawler, '#result-list li .details .linkCtnr');
         if ($offers) {

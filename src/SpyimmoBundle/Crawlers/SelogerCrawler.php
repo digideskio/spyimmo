@@ -2,9 +2,10 @@
 
 namespace SpyimmoBundle\Crawlers;
 
+use SpyimmoBundle\Entity\Search;
+use SpyimmoBundle\Services\CrawlerService;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DomCrawler\Crawler;
-use SpyimmoBundle\Services\CrawlerService;
 
 /**
  * Class SelogerCrawler
@@ -24,19 +25,19 @@ class SelogerCrawler extends AbstractCrawler
         $this->searchUrl = self::SEARCH_URL;
 
         $this->searchCriterias = array(
-          CrawlerService::MIN_BUDGET     => 'pxmin',
-          CrawlerService::MAX_BUDGET     => 'pxmax',
-          CrawlerService::MIN_SURFACE    => 'surfacemin',
-          CrawlerService::MAX_SURFACE    => 'surfacemax',
-          CrawlerService::MIN_NB_BEDROOM => 'nb_chambresmin',
-          CrawlerService::MIN_NB_ROOM    => 'nb_piecesmin',
-          CrawlerService::MAX_NB_ROOM    => 'nb_piecesmax',
+          Search::MIN_BUDGET => 'pxmin',
+          Search::MAX_BUDGET => 'pxmax',
+          Search::MIN_SURFACE => 'surfacemin',
+          Search::MAX_SURFACE => 'surfacemax',
+          Search::MIN_BEDROOM => 'nb_chambresmin',
+          Search::MIN_ROOM => 'nb_piecesmin',
+          Search::MAX_ROOM => 'nb_piecesmax',
         );
     }
 
-    public function getOffers($criterias, $excludedCrawlers = array())
+    public function getOffers(Search $search, $excludedCrawlers = array())
     {
-        parent::getOffers($criterias, $excludedCrawlers);
+        parent::getOffers($search, $excludedCrawlers);
 
         $offers = $this->nodeFilter($this->crawler, '.listing_infos h2 a');
 

@@ -3,9 +3,10 @@
 namespace SpyimmoBundle\Crawlers;
 
 use GuzzleHttp\Exception\RequestException;
+use SpyimmoBundle\Entity\Search;
+use SpyimmoBundle\Services\CrawlerService;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DomCrawler\Crawler;
-use SpyimmoBundle\Services\CrawlerService;
 
 /**
  * Class Century21Crawler
@@ -25,12 +26,12 @@ class Century21Crawler extends AbstractCrawler
         $this->searchUrl = self::SEARCH_URL;
     }
 
-    public function getOffers($criterias, $excludedCrawlers = array())
+    public function getOffers(Search $search, $excludedCrawlers = array())
     {
         $this->searchUrl = $this->transformCenturyUrl();
-        $this->searchUrl = $this->generateUrl($this->searchUrl, $criterias);
-        parent::getOffers($criterias, $excludedCrawlers);
-
+        $this->searchUrl = $this->generateUrl($this->searchUrl, $search);
+        parent::getOffers($search, $excludedCrawlers);
+die(var_dump($this->searchUrl));
         $offerBlock = $this->nodeFilter($this->crawler, '.annoncesListeBien');
         $offers = $this->nodeFilter($offerBlock->first(), 'li a');
         if ($offers) {
@@ -53,7 +54,7 @@ class Century21Crawler extends AbstractCrawler
 
     protected function transformCenturyUrl()
     {
-        return sprintf(self::SEARCH_URL, CrawlerService::MIN_SURFACE, CrawlerService::MAX_BUDGET, CrawlerService::MIN_NB_ROOM);
+        return sprintf(self::SEARCH_URL, Search::MIN_SURFACE, Search::MAX_BUDGET, Search::MIN_ROOM);
     }
 
     protected function getOfferDetail($url, $title)

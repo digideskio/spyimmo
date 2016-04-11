@@ -4,9 +4,10 @@ namespace SpyimmoBundle\Crawlers;
 
 use Goutte\Client;
 use GuzzleHttp\Exception\RequestException;
+use SpyimmoBundle\Entity\Search;
+use SpyimmoBundle\Services\CrawlerService;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DomCrawler\Crawler;
-use SpyimmoBundle\Services\CrawlerService;
 
 /**
  * Class BaoCrawler
@@ -30,7 +31,7 @@ class BaoCrawler extends AbstractCrawler
         $this->searchUrl = null;
     }
 
-    public function getOffers($criterias, $excludedCrawlers = array())
+    public function getOffers(Search $search, $excludedCrawlers = array())
     {
         $this->searchUrl = sprintf(self::SEARCH_URL, CrawlerService::MAX_BUDGET, CrawlerService::MIN_SURFACE);
 

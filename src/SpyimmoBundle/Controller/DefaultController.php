@@ -3,7 +3,10 @@
 namespace SpyimmoBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use SpyimmoBundle\Entity\Search;
+use SpyimmoBundle\Form\SearchType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -20,6 +23,30 @@ class DefaultController extends Controller
         $offers = $repository->getOffers();
 
         return $this->render('@Spyimmo/Default/index.html.twig', array('offers' => $offers, 'title' => 'Dernières offres'));
+    }
+
+    /**
+     * @Route("/configure", name="configure")
+     */
+    public function configureAction(Request $request)
+    {
+        $manager = $this->get('search.manager');
+        $search = $manager->getSearch();
+
+        $form = $this->createForm(SearchType::class, $search);
+        $form->add('save', SubmitType::class, array('label' => 'Enregistrer'));
+
+        if ($form->handleRequest($request)->isValid()) {
+            $manager->save($search);
+
+            $this->addFlash('notice', 'Recherche sauvegardée');
+
+            return $this->redirectToRoute('configure');
+        }
+
+        return $this->render('SpyimmoBundle:Default:configure.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 
     /**

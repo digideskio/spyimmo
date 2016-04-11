@@ -3,9 +3,10 @@
 namespace SpyimmoBundle\Crawlers;
 
 use GuzzleHttp\Exception\RequestException;
+use SpyimmoBundle\Entity\Search;
+use SpyimmoBundle\Services\CrawlerService;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DomCrawler\Crawler;
-use SpyimmoBundle\Services\CrawlerService;
 
 /**
  * Class FonciaCrawler
@@ -25,12 +26,12 @@ class FonciaCrawler extends AbstractCrawler
         $this->searchUrl = self::SEARCH_URL;
     }
 
-    public function getOffers($criterias, $excludedCrawlers = array())
+    public function getOffers(Search $search, $excludedCrawlers = array())
     {
 
         $this->searchUrl = $this->transformFonciaUrl($criterias);
         $this->searchUrl = $this->generateUrl($this->searchUrl, $criterias);
-        parent::getOffers($criterias, $excludedCrawlers);
+        parent::getOffers($search, $excludedCrawlers);
 
         $offers = $this->nodeFilter($this->crawler, '.Content-overflow article.TeaserOffer a:not(.Modal-link):not(.TeaserOffer-ill)');
         if ($offers) {
