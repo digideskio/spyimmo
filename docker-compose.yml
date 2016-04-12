@@ -1,29 +1,50 @@
-database:
-    environment:
-        MYSQL_ROOT_PASSWORD: 'root'
-        MYSQL_DATABASE: 'spyimmo'
-        MYSQL_USER: 'spyimmo'
-        MYSQL_PASSWORD: 'spyimmo'
-    image: mysql:5.7
-    ports:
-        - 3306:3306
+version: "2.0"
 
-php:
-    build: ./docker/php
-    links:
-        - database
-    ports:
-        - 9000:9000
-    volumes:
-        - ./:/srv/http
+services:
+    database:
+        environment:
+            MYSQL_ROOT_PASSWORD: 'root'
+            MYSQL_DATABASE: 'spyimmo'
+            MYSQL_USER: 'spyimmo'
+            MYSQL_PASSWORD: 'spyimmo'
+        image: mysql:5.7
+        network_mode: "host"
+        ports:
+            - 3306:3306
+        # networks:
+        #     host:
+        #         aliases:
+        #             - database
 
-web:
-    build: ./docker/web
-    links:
-        - php
-    volumes:
-        - ./:/var/www
-        - ./docker/web/nginx.conf:/nginx.conf
-    ports:
-        - 80:80
-    command: nginx -c /nginx.conf
+    php:
+        build: ./docker/php
+        ports:
+            - 9000:9000
+        volumes:
+            - ./:/srv/http
+        network_mode: "host"
+        depends_on:
+            - database
+        # networks:
+        #     host:
+        #         aliases:
+        #             - php
+
+    web:
+        build: ./docker/web
+        network_mode: "host"
+        volumes:
+            - ./:/var/www
+            - ./docker/web/nginx.conf:/nginx.conf
+        ports:
+            - 80:80
+        command: nginx -c /nginx.conf
+        depends_on:
+            - php
+        # networks:
+        #     host:
+        #         aliases:
+        #             - web
+
+# networks:
+#     host:
